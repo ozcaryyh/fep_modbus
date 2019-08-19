@@ -5,4 +5,6 @@
 #include "common_chk_func.h"
 #include "common_file_func.h"
 
+int g_stop;
+
 #endif // AFC_MAIN_H_

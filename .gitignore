@@ -6,6 +6,9 @@
 # Ignore compile logs
 
 # Ignore all compiled files
+afc/afc
+afc/*.o
+afc/port/*.o
 freemodbus-v1.6/modbus/*.o
 freemodbus-v1.6/modbus/ascii/*.o
 freemodbus-v1.6/modbus/functions/*.o

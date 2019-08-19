@@ -58,6 +58,7 @@ static enum ThreadState eGetPollingThreadState( void );
 static void eSetPollingThreadState( enum ThreadState eNewState );
 static void* pvPollingThread( void *pvParameter );
 static int afc_create_config(afc_cfg_t *cfg);
+static void afc_sig_handler(int signo);
 
 /* ----------------------- Start implementation -----------------------------*/
 int main( int argc, char *argv[] )
@@ -94,7 +95,7 @@ int main( int argc, char *argv[] )
 		}
 
 		eSetPollingThreadState( SHUTDOWN );
-
+	
 		/* Release hardware resources. */
 		( void )eMBClose(  );
 		iExitCode = EXIT_SUCCESS;
@@ -445,6 +446,22 @@ static int afc_create_config(afc_cfg_t *cfg)
 //	cfg->base_byte_idx = srtp_cal_byte(min_bit);
 //	cfg->final_byte_idx = srtp_cal_byte(max_bit);
 	return 1;	
+}
+
+// signal handler
+// stop the application by setting g_stop = 1 when received SIGINT
+//
+// input : signo - signal number 
+// output: N/A
+//
+// return: N/A
+static void afc_sig_handler(int signo)
+{
+	if (signo == SIGINT && g_stop == 0)
+	{
+		printf("%s received SIGINT\n", __FILE__);
+		g_stop = 1;
+	}
 }
 
 

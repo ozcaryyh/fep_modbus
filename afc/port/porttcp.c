@@ -115,6 +115,7 @@ BOOL
 xMBTCPPortInit( USHORT usTCPPort )
 {
 	USHORT          usPort;
+	CHAR		acErrorMsg[20];
 	struct sockaddr_in serveraddr;
 
 	if( usTCPPort == 0 )
@@ -163,9 +164,67 @@ xMBTCPPortInit( USHORT usTCPPort )
 	{
 		xListenSocket = INVALID_SOCKET;
 
-		if( connect( xClientSocket, ( struct sockaddr * )&serveraddr, sizeof( serveraddr ) ) == SOCKET_ERROR )
+		if( ( xClientSocket = socket( AF_INET, SOCK_STREAM, IPPROTO_TCP ) ) == -1 )
 		{
-			fprintf( stderr, "Connect server failed.\r\n" );
+			fprintf( stderr, "Create socket failed.\r\n" );
+
+			return FALSE;
+		}
+		else if( connect( xClientSocket, ( struct sockaddr * )&serveraddr, sizeof( serveraddr ) ) == -1 )
+		{
+			switch (errno)
+			{
+				case EACCES:
+					strcpy(acErrorMsg, "EACCESS");
+					break;
+				case EPERM:
+					strcpy(acErrorMsg, "EPERM");
+					break;
+				case EADDRINUSE:
+					strcpy(acErrorMsg, "EADDRINUSE");
+					break;
+				case EAFNOSUPPORT:
+					strcpy(acErrorMsg, "EAFNOSUPPORT");
+					break;
+				case EAGAIN:
+					strcpy(acErrorMsg, "EAGAIN");
+					break;
+				case EALREADY:
+					strcpy(acErrorMsg, "EALREADY");
+					break;
+				case EBADF:
+					strcpy(acErrorMsg, "EBADF");
+					break;
+				case ECONNREFUSED:
+					strcpy(acErrorMsg, "ECONNREFUSED");
+					break;
+				case EFAULT:
+					strcpy(acErrorMsg, "EFAULT");
+					break;
+				case EINPROGRESS:
+					strcpy(acErrorMsg, "EINPROGRESS");
+					break;
+				case EINTR:
+					strcpy(acErrorMsg, "EINTR");
+					break;
+				case EISCONN:
+					strcpy(acErrorMsg, "EISCONN");
+					break;
+				case ENETUNREACH:
+					strcpy(acErrorMsg, "ENETUNREACH");
+					break;
+				case ENOTSOCK:
+					strcpy(acErrorMsg, "ENOTSOCK");
+					break;
+				case ETIMEDOUT:
+					strcpy(acErrorMsg, "ETIMEDOUT");
+					break;
+				default:
+					sprintf(acErrorMsg, "unknown error(%d)", errno);
+					break;
+			}
+
+			fprintf( stderr, "Connect server %s:%d failed with error (%s)\r\n", acTCPIPAddr, usPort, acErrorMsg );
 			return FALSE;
 		}
 	}
