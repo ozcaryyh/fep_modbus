@@ -78,6 +78,15 @@ int main( int argc, char *argv[] )
 		goto Err;
 	}*/
 
+	// signal handler
+	if (signal(SIGINT, afc_sig_handler) == SIG_ERR)
+	{
+		printf("Can't catch SIGINT\n");
+		//log_print(LOG_LVL_CRITICAL, DIR_LOG_PLC, cfg.loc, LOG_TYPE_EVT, "Can't catch SIGINT\n");
+		iExitCode = EXIT_FAILURE;
+		goto Err;
+	}
+
 	xMBTCPClientInit( "192.168.121.1" );
 	
 	if ( eMBTCPInit( MB_TCP_PORT_USE_DEFAULT ) != MB_ENOERR )
@@ -101,7 +110,7 @@ int main( int argc, char *argv[] )
 		iExitCode = EXIT_SUCCESS;
 	}
 
-//Err:	
+Err:	
 
 	return iExitCode;
 }
